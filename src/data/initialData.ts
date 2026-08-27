@@ -1,4 +1,4 @@
-import { Track, BattleMatch, Crew, L4LTrack, StudioBeat, UserProfile, BlockedArtist } from '../types';
+import { Track, BattleMatch, Crew, L4LTrack, StudioBeat, UserProfile, BlockedArtist, DailyMission, DailyMissionState } from '../types';
 
 export const INITIAL_USER: UserProfile = {
   id: 'usr_me_01',
@@ -373,3 +373,80 @@ export const INITIAL_BLOCKED_ARTISTS: BlockedArtist[] = [
     reason: 'Spamming low-effort audio in Listen 4 Listen pool',
   },
 ];
+
+export const INITIAL_DAILY_MISSIONS: DailyMission[] = [
+  {
+    id: 'mis_01',
+    title: 'Stage Ear: Stream 3 Tracks',
+    description: 'Listen to 3 live tracks across the Cash Stage stream or Bama Slammer headliner drops.',
+    category: 'listening',
+    currentProgress: 1,
+    targetProgress: 3,
+    unit: 'tracks',
+    rewardPoints: 100,
+    rewardCredits: 5,
+    isCompleted: false,
+    isClaimed: false,
+    iconName: 'Disc',
+    actionTab: 'listen_now',
+    actionLabel: 'Stream Live Tracks',
+  },
+  {
+    id: 'mis_02',
+    title: 'Anonymous Juror: Cast a Blind Vote',
+    description: 'Listen to both contenders and submit your uncorrupted verdict in the $500 Battle Arena.',
+    category: 'voting',
+    currentProgress: 0,
+    targetProgress: 1,
+    unit: 'vote',
+    rewardPoints: 150,
+    rewardCash: 10.00,
+    isCompleted: false,
+    isClaimed: false,
+    iconName: 'Vote',
+    actionTab: 'anonymous_voting',
+    actionLabel: 'Enter Blind Arena',
+  },
+  {
+    id: 'mis_03',
+    title: 'Vocal Booth Heat: Record in DAW',
+    description: 'Fire up the microphone, select an 808 beat, and lay down fresh bars in the Studio.',
+    category: 'recording',
+    currentProgress: 0,
+    targetProgress: 1,
+    unit: 'take',
+    rewardPoints: 200,
+    rewardCash: 25.00,
+    isCompleted: false,
+    isClaimed: false,
+    iconName: 'Mic2',
+    actionTab: 'recording_studio',
+    actionLabel: 'Launch Vocal Booth',
+  },
+  {
+    id: 'mis_04',
+    title: 'Stage Supporter: Tip Cash or Review',
+    description: 'Throw a $10+ tip to an artist on the stage or complete a peer review in Listen 4 Listen.',
+    category: 'tipping',
+    currentProgress: 0,
+    targetProgress: 1,
+    unit: 'action',
+    rewardPoints: 120,
+    rewardCredits: 15,
+    isCompleted: false,
+    isClaimed: false,
+    iconName: 'DollarSign',
+    actionTab: 'listen_now',
+    actionLabel: 'Throw Tip or Review',
+  },
+];
+
+export const INITIAL_DAILY_MISSION_STATE: DailyMissionState = {
+  streakDays: 5,
+  lastActiveDate: new Date().toISOString().split('T')[0],
+  bonusGrandChestClaimed: false,
+  grandChestBonusPoints: 500,
+  grandChestBonusCash: 50.00,
+  missions: INITIAL_DAILY_MISSIONS,
+};
+

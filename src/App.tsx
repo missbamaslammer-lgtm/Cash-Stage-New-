@@ -5,9 +5,10 @@ import {
   INITIAL_CREWS, 
   INITIAL_L4L_TRACKS, 
   INITIAL_USER, 
-  INITIAL_BLOCKED_ARTISTS 
+  INITIAL_BLOCKED_ARTISTS,
+  INITIAL_DAILY_MISSION_STATE
 } from './data/initialData';
-import { Track, BattleMatch, Crew, L4LTrack, UserProfile, BlockedArtist } from './types';
+import { Track, BattleMatch, Crew, L4LTrack, UserProfile, BlockedArtist, DailyMissionState } from './types';
 import { Navbar } from './components/Navbar';
 import { PlayerBar } from './components/PlayerBar';
 import { ListenNowView } from './components/ListenNowView';
@@ -18,6 +19,7 @@ import { CrewsView } from './components/CrewsView';
 import { BlockedArtistsModal } from './components/BlockedArtistsModal';
 import { AndroidStudioHubModal } from './components/AndroidStudioHubModal';
 import { UserProfileModal } from './components/UserProfileModal';
+import { DailyMissionsModal } from './components/DailyMissionsModal';
 import { audioEngine } from './services/audioService';
 
 export default function App() {
@@ -33,19 +35,92 @@ export default function App() {
   const [l4lPool, setL4lPool] = useState<L4LTrack[]>(INITIAL_L4L_TRACKS);
   const [user, setUser] = useState<UserProfile>(INITIAL_USER);
   const [blockedArtists, setBlockedArtists] = useState<BlockedArtist[]>(INITIAL_BLOCKED_ARTISTS);
+  const [missionState, setMissionState] = useState<DailyMissionState>(INITIAL_DAILY_MISSION_STATE);
 
   // Modal States
   const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const [isAABModalOpen, setIsAABModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isMissionsModalOpen, setIsMissionsModalOpen] = useState(false);
 
   // Filter out any blocked artist tracks
   const visibleTracks = tracks.filter((t) =>
     !blockedArtists.some((b) => b.artistName.toLowerCase() === t.artist.toLowerCase())
   );
 
+  // Track User Activity across platform
+  const trackUserActivity = (
+    category: 'listening' | 'voting' | 'recording' | 'tipping' | 'l4l' | 'social',
+    amount: number = 1
+  ) => {
+    setMissionState((prev) => {
+      let updated = false;
+      const newMissions = prev.missions.map((m) => {
+        if (m.category === category && !m.isCompleted) {
+          const newProgress = Math.min(m.targetProgress, m.currentProgress + amount);
+          const isDone = newProgress >= m.targetProgress;
+          if (isDone && !m.isCompleted) {
+            audioEngine.playCashSound();
+          }
+          updated = true;
+          return {
+            ...m,
+            currentProgress: newProgress,
+            isCompleted: isDone,
+          };
+        }
+        return m;
+      });
+
+      if (!updated) return prev;
+      return {
+        ...prev,
+        missions: newMissions,
+      };
+    });
+  };
+
+  // Claim Mission Reward
+  const handleClaimMissionReward = (missionId: string) => {
+    const mission = missionState.missions.find((m) => m.id === missionId);
+    if (!mission || !mission.isCompleted || mission.isClaimed) return;
+
+    setMissionState((prev) => ({
+      ...prev,
+      missions: prev.missions.map((m) =>
+        m.id === missionId ? { ...m, isClaimed: true } : m
+      ),
+    }));
+
+    setUser((prev) => ({
+      ...prev,
+      stagePoints: prev.stagePoints + mission.rewardPoints,
+      cashBalance: prev.cashBalance + (mission.rewardCash || 0),
+      listenCredits: prev.listenCredits + (mission.rewardCredits || 0),
+    }));
+  };
+
+  // Claim Grand Chest
+  const handleClaimGrandChest = () => {
+    if (missionState.bonusGrandChestClaimed) return;
+
+    setMissionState((prev) => ({
+      ...prev,
+      bonusGrandChestClaimed: true,
+      streakDays: prev.streakDays + 1,
+    }));
+
+    setUser((prev) => ({
+      ...prev,
+      stagePoints: prev.stagePoints + missionState.grandChestBonusPoints,
+      cashBalance: prev.cashBalance + missionState.grandChestBonusCash,
+    }));
+  };
+
   // Audio Playback Handlers
   const handlePlayTrack = (track: Track) => {
+    trackUserActivity('listening', 1);
+
     if (currentTrack?.id === track.id) {
       if (isPlaying) {
         audioEngine.stopBeat();
@@ -60,6 +135,7 @@ export default function App() {
       setIsPlaying(true);
     }
   };
+
 
   const handleTogglePlay = () => {
     if (!currentTrack) return;
@@ -96,6 +172,8 @@ export default function App() {
 
   // Throw Cash / Tip Handler
   const handleThrowCash = (amount: number, track: Track) => {
+    trackUserActivity('tipping', 1);
+
     // Update track cash earned and user balance
     setTracks((prev) =>
       prev.map((t) => (t.id === track.id ? { ...t, cashEarned: t.cashEarned + amount } : t))
@@ -138,6 +216,8 @@ export default function App() {
 
   // Publish from Recording Studio
   const handlePublishTrack = (newTrack: Track) => {
+    trackUserActivity('recording', 1);
+
     setTracks((prev) => [newTrack, ...prev]);
     setCurrentTrack(newTrack);
     setUser((prev) => ({
@@ -151,6 +231,8 @@ export default function App() {
 
   // Anonymous Voting Callback
   const handleCastVote = (battleId: string, choice: 'A' | 'B') => {
+    trackUserActivity('voting', 1);
+
     setBattles((prev) =>
       prev.map((b) => {
         if (b.id !== battleId) return b;
@@ -183,6 +265,9 @@ export default function App() {
     creditsEarned: number,
     feedback: { rating: number; comment: string }
   ) => {
+    trackUserActivity('tipping', 1);
+    trackUserActivity('listening', 1);
+
     setL4lPool((prev) =>
       prev.map((item) => {
         if (item.id !== l4lId) return item;
@@ -255,9 +340,11 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         user={user}
-        onOpenBlockedModal={() => setIsBlockedModalOpen(true)}
+        onOpenBlockedModal={() => setIsBlockedModalOpen(false || true)}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
         onOpenAABModal={() => setIsAABModalOpen(true)}
+        onOpenMissionsModal={() => setIsMissionsModalOpen(true)}
+        missionState={missionState}
       />
 
       {/* Main App Body */}
@@ -271,6 +358,10 @@ export default function App() {
             onThrowCash={handleThrowCash}
             onBlockArtist={handleBlockArtist}
             onOpenStudio={() => setActiveTab('recording_studio')}
+            missionState={missionState}
+            onOpenMissionsModal={() => setIsMissionsModalOpen(true)}
+            onClaimReward={handleClaimMissionReward}
+            onNavigateToMission={(tab) => setActiveTab(tab)}
           />
         )}
 
@@ -360,6 +451,20 @@ export default function App() {
         userTracks={tracks.filter((t) => t.artist === user.name)}
         onAddCash={handleAddCash}
       />
+
+      {/* Daily Missions & Stage Quests Modal */}
+      <DailyMissionsModal
+        isOpen={isMissionsModalOpen}
+        onClose={() => setIsMissionsModalOpen(false)}
+        missionState={missionState}
+        onClaimReward={handleClaimMissionReward}
+        onClaimGrandChest={handleClaimGrandChest}
+        onNavigateToMission={(tab) => {
+          setIsMissionsModalOpen(false);
+          setActiveTab(tab);
+        }}
+      />
     </div>
   );
 }
+

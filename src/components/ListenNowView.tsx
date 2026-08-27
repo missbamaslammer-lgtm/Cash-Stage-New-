@@ -17,8 +17,9 @@ import {
   Zap,
   Music4
 } from 'lucide-react';
-import { Track } from '../types';
+import { Track, DailyMissionState } from '../types';
 import { audioEngine } from '../services/audioService';
+import { DailyMissionsBanner } from './DailyMissionsBanner';
 
 interface ListenNowViewProps {
   tracks: Track[];
@@ -28,6 +29,10 @@ interface ListenNowViewProps {
   onThrowCash: (amount: number, track: Track) => void;
   onBlockArtist: (artistName: string, artistAvatar: string) => void;
   onOpenStudio: () => void;
+  missionState?: DailyMissionState;
+  onOpenMissionsModal?: () => void;
+  onClaimReward?: (missionId: string) => void;
+  onNavigateToMission?: (tab: string) => void;
 }
 
 export const ListenNowView: React.FC<ListenNowViewProps> = ({
@@ -38,7 +43,12 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
   onThrowCash,
   onBlockArtist,
   onOpenStudio,
+  missionState,
+  onOpenMissionsModal,
+  onClaimReward,
+  onNavigateToMission,
 }) => {
+
   const [selectedGenre, setSelectedGenre] = useState<string>('All');
   const [likedTrackIds, setLikedTrackIds] = useState<Record<string, boolean>>({});
   const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string; time: string }[]>>({
@@ -177,8 +187,19 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
         </div>
       )}
 
+      {/* Daily Missions Stage Banner */}
+      {missionState && onOpenMissionsModal && onClaimReward && onNavigateToMission && (
+        <DailyMissionsBanner
+          missionState={missionState}
+          onOpenMissionsModal={onOpenMissionsModal}
+          onClaimReward={onClaimReward}
+          onNavigateToMission={onNavigateToMission}
+        />
+      )}
+
       {/* Genre Filter Tabs & Stage Pulse */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
           {genres.map((genre) => (
             <button

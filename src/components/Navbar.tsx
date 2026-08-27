@@ -1,6 +1,6 @@
 import React from 'react';
-import { DollarSign, ShieldAlert, Sparkles, Trophy, Disc, Mic2, Vote, Repeat, Users, Smartphone, Wallet } from 'lucide-react';
-import { UserProfile } from '../types';
+import { DollarSign, ShieldAlert, Sparkles, Trophy, Disc, Mic2, Vote, Repeat, Users, Smartphone, Wallet, Flame, Target } from 'lucide-react';
+import { UserProfile, DailyMissionState } from '../types';
 
 interface NavbarProps {
   activeTab: string;
@@ -9,6 +9,8 @@ interface NavbarProps {
   onOpenBlockedModal: () => void;
   onOpenProfileModal: () => void;
   onOpenAABModal: () => void;
+  onOpenMissionsModal: () => void;
+  missionState: DailyMissionState;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,7 +20,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenBlockedModal,
   onOpenProfileModal,
   onOpenAABModal,
+  onOpenMissionsModal,
+  missionState,
 }) => {
+  const completedMissions = missionState.missions.filter((m) => m.isCompleted).length;
+  const unclaimedMissions = missionState.missions.filter((m) => m.isCompleted && !m.isClaimed).length;
+
   const navItems = [
     { id: 'listen_now', label: 'Listen Now', icon: Disc, badge: 'LIVE' },
     { id: 'recording_studio', label: 'Recording Studio', icon: Mic2, badge: 'DAW' },
@@ -26,6 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'listen_4_listen', label: 'Listen 4 Listen', icon: Repeat, badge: '+CREDITS' },
     { id: 'crews', label: 'Crews & Squads', icon: Users, badge: 'WARS' },
   ];
+
 
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-amber-500/20 text-white shadow-2xl">
@@ -43,6 +51,22 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Daily Missions Quick Launch Button */}
+          <button
+            onClick={onOpenMissionsModal}
+            className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-bold transition cursor-pointer ${
+              unclaimedMissions > 0
+                ? 'bg-amber-500/20 text-amber-300 border-amber-400/50 hover:bg-amber-500/30 animate-pulse'
+                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700'
+            }`}
+          >
+            <Flame className="w-3 h-3 text-orange-400" />
+            <span>Missions</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-zinc-950/80 text-[10px] text-amber-400 font-mono">
+              {completedMissions}/{missionState.missions.length}
+            </span>
+          </button>
+
           <button
             onClick={onOpenAABModal}
             className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-[11px] font-medium transition cursor-pointer"
@@ -62,6 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </div>
       </div>
+
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-4">
@@ -123,6 +148,29 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Wallet & User Profile Stats */}
         <div className="flex items-center gap-2.5">
+          {/* Daily Missions Pill */}
+          <button
+            onClick={onOpenMissionsModal}
+            className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border transition cursor-pointer shadow-inner ${
+              unclaimedMissions > 0
+                ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border-amber-400/60 ring-1 ring-amber-400/40 text-amber-300'
+                : 'bg-zinc-900 border-amber-500/30 hover:border-amber-500/60 text-zinc-300'
+            }`}
+          >
+            <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <Flame className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] text-zinc-400 leading-tight uppercase font-semibold flex items-center gap-1">
+                <span>Missions</span>
+                {unclaimedMissions > 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />}
+              </div>
+              <div className="text-xs font-black text-amber-300 tracking-tight font-mono">
+                {completedMissions}/{missionState.missions.length} • {missionState.streakDays}d Streak
+              </div>
+            </div>
+          </button>
+
           {/* Cash Balance Pill */}
           <div 
             onClick={onOpenProfileModal}
@@ -138,6 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
           </div>
+
 
           {/* Listen Credits */}
           <div 
@@ -172,6 +221,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Horizontal Navigation Tabs */}
       <div className="lg:hidden flex items-center gap-1 px-3 py-1.5 overflow-x-auto no-scrollbar border-t border-zinc-800 bg-zinc-950">
+        <button
+          onClick={onOpenMissionsModal}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
+            unclaimedMissions > 0
+              ? 'bg-amber-500 text-zinc-950 border-amber-400 animate-pulse'
+              : 'bg-zinc-900 text-amber-400 border-amber-500/30'
+          }`}
+        >
+          <Flame className="w-3.5 h-3.5" />
+          <span>Missions ({completedMissions}/{missionState.missions.length})</span>
+        </button>
+
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -191,6 +252,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           );
         })}
       </div>
+
     </header>
   );
 };

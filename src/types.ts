@@ -99,6 +99,33 @@ export interface StudioBeat {
   synthPattern: string; // Used by our Web Audio synthesizer
 }
 
+export interface DailyMission {
+  id: string;
+  title: string;
+  description: string;
+  category: 'listening' | 'voting' | 'recording' | 'tipping' | 'l4l' | 'social';
+  currentProgress: number;
+  targetProgress: number;
+  unit: string;
+  rewardPoints: number;
+  rewardCash?: number;
+  rewardCredits?: number;
+  isCompleted: boolean;
+  isClaimed: boolean;
+  iconName: 'Disc' | 'Vote' | 'Mic2' | 'DollarSign' | 'Repeat' | 'Flame' | 'Trophy' | 'Sparkles';
+  actionTab: 'listen_now' | 'recording_studio' | 'anonymous_voting' | 'listen_4_listen' | 'crews';
+  actionLabel: string;
+}
+
+export interface DailyMissionState {
+  streakDays: number;
+  lastActiveDate: string;
+  bonusGrandChestClaimed: boolean;
+  grandChestBonusPoints: number;
+  grandChestBonusCash: number;
+  missions: DailyMission[];
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -113,3 +140,4 @@ export interface UserProfile {
   battlesWon: number;
   isVerified: boolean;
 }
+
