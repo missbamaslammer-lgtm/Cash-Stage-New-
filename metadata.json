@@ -1,0 +1,6 @@
+{
+  "name": "Cash Stage by Bama Slammer",
+  "description": "The ultimate music battle arena, recording studio, anonymous voting tournaments, artist crews, and Listen 4 Listen rewards platform by Bama Slammer.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
