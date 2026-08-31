@@ -150,11 +150,12 @@ export const BlockedArtistsModal: React.FC<BlockedArtistsModalProps> = ({
 
         {/* Protection Explainer */}
         <div className="bg-zinc-900/50 p-3 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 space-y-1">
-          <strong>What happens when you block an artist?</strong>
-          <ul className="list-disc list-inside space-y-0.5 text-zinc-500">
-            <li>Their tracks are removed from your Listen Now stream.</li>
-            <li>They cannot challenge your tracks in Anonymous Battles.</li>
-            <li>Their feedback is excluded from your Listen 4 Listen pool.</li>
+          <strong className="text-amber-400">Strict Anti-Harassment & Fair Play Rules:</strong>
+          <ul className="list-disc list-inside space-y-0.5 text-zinc-400">
+            <li>Blocked artists <strong>CANNOT vote on your tracks</strong> in blind or public voting.</li>
+            <li>Blocked artists <strong>CANNOT see your drops, profile, or stems</strong> anywhere on Cash Stage.</li>
+            <li>Blocked artists <strong>CANNOT invite you to collabs</strong> or challenge you to battles.</li>
+            <li>All of their tracks and comments are completely hidden from your stream.</li>
           </ul>
         </div>
 

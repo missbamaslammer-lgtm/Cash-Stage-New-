@@ -15,9 +15,15 @@ import {
   PlusCircle, 
   Send,
   Zap,
-  Music4
+  Music4,
+  Eye,
+  Headphones,
+  Users,
+  Swords,
+  Clock,
+  Pin
 } from 'lucide-react';
-import { Track, DailyMissionState } from '../types';
+import { Track, DailyMissionState, BlockedArtist } from '../types';
 import { audioEngine } from '../services/audioService';
 import { DailyMissionsBanner } from './DailyMissionsBanner';
 
@@ -29,10 +35,12 @@ interface ListenNowViewProps {
   onThrowCash: (amount: number, track: Track) => void;
   onBlockArtist: (artistName: string, artistAvatar: string) => void;
   onOpenStudio: () => void;
+  blockedArtists: BlockedArtist[];
   missionState?: DailyMissionState;
   onOpenMissionsModal?: () => void;
   onClaimReward?: (missionId: string) => void;
   onNavigateToMission?: (tab: string) => void;
+  onOpenStoreModal?: () => void;
 }
 
 export const ListenNowView: React.FC<ListenNowViewProps> = ({
@@ -43,13 +51,14 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
   onThrowCash,
   onBlockArtist,
   onOpenStudio,
+  blockedArtists,
   missionState,
   onOpenMissionsModal,
   onClaimReward,
   onNavigateToMission,
+  onOpenStoreModal,
 }) => {
-
-  const [selectedGenre, setSelectedGenre] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [likedTrackIds, setLikedTrackIds] = useState<Record<string, boolean>>({});
   const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string; time: string }[]>>({
     trk_01: [
@@ -60,14 +69,21 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
   const [newCommentText, setNewCommentText] = useState('');
   const [activeCommentTrackId, setActiveCommentTrackId] = useState<string | null>(null);
 
-  const genres = ['All', 'Southern Rap', 'Trap', 'Drill', 'R&B', 'Hip Hop'];
+  // Filter blocked artists out so blocked creators can NOT see or be seen
+  const blockedNames = new Set(blockedArtists.map((b) => b.artistName.toLowerCase()));
 
-  const filteredTracks = tracks.filter((t) => {
-    if (selectedGenre === 'All') return true;
-    return t.genre === selectedGenre;
-  });
+  const filteredTracks = tracks
+    .filter((t) => !blockedNames.has(t.artist.toLowerCase()))
+    .filter((t) => {
+      if (selectedCategory === 'All') return true;
+      if (selectedCategory === 'Solo') return t.dropType === 'solo';
+      if (selectedCategory === 'Collabs') return t.dropType === 'collab';
+      if (selectedCategory === 'Battles') return t.dropType === 'battle';
+      return t.genre === selectedCategory;
+    });
 
-  const featuredTrack = tracks.find((t) => t.isBamaSlammerOfficial) || tracks[0];
+  // Spotlight Pinned Track (3.99 live feed spotlight)
+  const spotlightTrack = tracks.find((t) => t.isPinnedSpotlight) || tracks[0];
 
   const handleToggleLike = (trackId: string) => {
     setLikedTrackIds((prev) => ({ ...prev, [trackId]: !prev[trackId] }));
@@ -88,52 +104,70 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
     setNewCommentText('');
   };
 
+  const formatDuration = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
+  };
+
   return (
     <div className="space-y-8 pb-32">
-      {/* Featured Headline Hero Banner */}
-      {featuredTrack && (
-        <div className="relative rounded-3xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-zinc-950 via-zinc-900 to-amber-950/40 p-6 md:p-8 shadow-2xl">
-          {/* Background Ambient Glow */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      
+      {/* Pinned Live Feed Spotlight Banner ($3.99 Feature) */}
+      {spotlightTrack && (
+        <div className="relative rounded-3xl overflow-hidden border-2 border-amber-500/50 bg-gradient-to-br from-zinc-950 via-zinc-900 to-amber-950/50 p-6 md:p-8 shadow-2xl ring-1 ring-amber-400/20">
+          <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
+            <Pin className="w-3.5 h-3.5 fill-current" />
+            <span>Live Feed Spotlight Pin ($3.99)</span>
+          </div>
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 pt-4 sm:pt-0">
             <div className="space-y-4 max-w-2xl text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-black tracking-wide uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-spin" />
-                Featured Stage Headliner
+                <span>Featured #1 Stage Headliner</span>
               </div>
 
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-                {featuredTrack.title}
+                {spotlightTrack.title}
               </h2>
 
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-sm text-zinc-300">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs sm:text-sm text-zinc-300 font-mono">
                 <div className="flex items-center gap-2">
                   <img
-                    src={featuredTrack.artistAvatar}
-                    alt={featuredTrack.artist}
-                    className="w-8 h-8 rounded-full ring-2 ring-amber-400 object-cover"
+                    src={spotlightTrack.artistAvatar}
+                    alt={spotlightTrack.artist}
+                    className="w-7 h-7 rounded-full ring-2 ring-amber-400 object-cover"
                   />
-                  <span className="font-bold text-amber-300">{featuredTrack.artist}</span>
+                  <span className="font-bold text-amber-300">{spotlightTrack.artist}</span>
                 </div>
-                <span className="text-zinc-500">•</span>
-                <span className="text-zinc-400">{featuredTrack.genre}</span>
-                <span className="text-zinc-500">•</span>
-                <span className="text-emerald-400 font-bold">${featuredTrack.cashEarned.toLocaleString()} Won</span>
+                <span>•</span>
+                <span className="text-zinc-400">{spotlightTrack.genre}</span>
+                <span>•</span>
+                <span className="text-amber-300 font-bold flex items-center gap-1">
+                  <Headphones className="w-3.5 h-3.5" />
+                  {spotlightTrack.plays.toLocaleString()} Plays
+                </span>
+                <span>•</span>
+                <span className="text-blue-300 flex items-center gap-1">
+                  <Eye className="w-3.5 h-3.5" />
+                  {spotlightTrack.views.toLocaleString()} Views
+                </span>
+                <span>•</span>
+                <span className="text-emerald-400 font-bold">${spotlightTrack.cashEarned.toLocaleString()} Won</span>
               </div>
 
-              <p className="text-sm text-zinc-300 leading-relaxed font-sans line-clamp-2">
-                "Step up on the Cash Stage, throw that green high. Heavy southern 808s shaking up the city. Alabama Slammer bringing raw fire."
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans line-clamp-2">
+                "Step up on the Cash Stage, throw that green high. Heavy southern 808s shaking up Mobile and the Dirty South. Alabama Slammer bringing raw fire."
               </p>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
                 <button
-                  onClick={() => onPlayTrack(featuredTrack)}
-                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-zinc-950 font-black shadow-lg shadow-amber-500/30 transition active:scale-95 cursor-pointer"
+                  onClick={() => onPlayTrack(spotlightTrack)}
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-zinc-950 font-black shadow-lg shadow-amber-500/30 transition active:scale-95 cursor-pointer hover:scale-105"
                 >
-                  {currentTrack?.id === featuredTrack.id && isPlaying ? (
+                  {currentTrack?.id === spotlightTrack.id && isPlaying ? (
                     <>
                       <Pause className="w-5 h-5 fill-current" />
                       <span>Pause Stage</span>
@@ -149,9 +183,9 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
                 <button
                   onClick={() => {
                     audioEngine.playCashSound();
-                    onThrowCash(25, featuredTrack);
+                    onThrowCash(25, spotlightTrack);
                   }}
-                  className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/30 transition active:scale-95 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/30 transition active:scale-95 cursor-pointer hover:scale-105"
                 >
                   <DollarSign className="w-4 h-4 text-yellow-300" />
                   <span>Throw $25 Cash</span>
@@ -162,7 +196,7 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
                   className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold border border-zinc-700 transition active:scale-95 cursor-pointer"
                 >
                   <PlusCircle className="w-4 h-4 text-amber-400" />
-                  <span>Record on this Beat</span>
+                  <span>Record in Studio</span>
                 </button>
               </div>
             </div>
@@ -170,8 +204,8 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
             {/* Visual Cover Stage Box */}
             <div className="relative group flex-shrink-0 w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-500/40">
               <img
-                src={featuredTrack.coverArt}
-                alt={featuredTrack.title}
+                src={spotlightTrack.coverArt}
+                alt={spotlightTrack.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5">
@@ -179,7 +213,7 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
                   <span className="flex items-center gap-1 text-red-400">
                     <Radio className="w-3.5 h-3.5 animate-pulse" /> LIVE NOW
                   </span>
-                  <span className="text-amber-300">{featuredTrack.bpm} BPM</span>
+                  <span className="text-amber-300 font-mono">{spotlightTrack.bpm} BPM • {formatDuration(spotlightTrack.duration)}</span>
                 </div>
               </div>
             </div>
@@ -197,32 +231,31 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
         />
       )}
 
-      {/* Genre Filter Tabs & Stage Pulse */}
+      {/* Categories & Filter Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-          {genres.map((genre) => (
+          {['All', 'Solo', 'Collabs', 'Battles', 'Southern Rap', 'Trap', 'Drill'].map((cat) => (
             <button
-              key={genre}
-              onClick={() => setSelectedGenre(genre)}
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
-                selectedGenre === genre
+                selectedCategory === cat
                   ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
                   : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800'
               }`}
             >
-              {genre}
+              {cat === 'Solo' ? 'Solo Drops (2m)' : cat === 'Collabs' ? 'Collabs (6m)' : cat === 'Battles' ? 'Battles (3m)' : cat}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2 text-xs text-zinc-400">
           <TrendingUp className="w-4 h-4 text-amber-400" />
-          <span>Showing <strong className="text-zinc-200">{filteredTracks.length}</strong> live tracks</span>
+          <span>Showing <strong className="text-zinc-200">{filteredTracks.length}</strong> active drops</span>
         </div>
       </div>
 
-      {/* Track Cards Grid */}
+      {/* Track Cards Grid with Views, Plays, and Block Protections */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTracks.map((track) => {
           const isCurrent = currentTrack?.id === track.id;
@@ -234,13 +267,13 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
           return (
             <div
               key={track.id}
-              className={`rounded-2xl border transition-all duration-300 bg-zinc-900/90 backdrop-blur-sm overflow-hidden flex flex-col ${
+              className={`rounded-3xl border transition-all duration-300 bg-zinc-900/90 backdrop-blur-sm overflow-hidden flex flex-col ${
                 isCurrent
                   ? 'border-amber-500 shadow-xl shadow-amber-500/10 ring-1 ring-amber-500/30'
                   : 'border-zinc-800 hover:border-zinc-700 shadow-lg'
               }`}
             >
-              {/* Cover Art Box with Play Button Overlay */}
+              {/* Cover Art Box */}
               <div className="relative aspect-video w-full overflow-hidden group">
                 <img
                   src={track.coverArt}
@@ -251,24 +284,37 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
 
                 {/* Top Badge Indicators */}
                 <div className="absolute top-3 inset-x-3 flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-lg bg-zinc-950/80 backdrop-blur-md text-[10px] font-black text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-                    {track.genre}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="px-2.5 py-1 rounded-lg bg-zinc-950/80 backdrop-blur-md text-[10px] font-black text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                      {track.genre}
+                    </span>
+
+                    <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase ${
+                      track.dropType === 'collab' 
+                        ? 'bg-purple-500 text-white' 
+                        : track.dropType === 'battle' 
+                        ? 'bg-rose-500 text-white' 
+                        : 'bg-zinc-800 text-zinc-300'
+                    }`}>
+                      {track.dropType === 'solo' ? 'Solo (2m)' : track.dropType === 'collab' ? 'Collab (6m)' : 'Battle (3m)'}
+                    </span>
+                  </div>
 
                   <div className="flex items-center gap-1.5">
-                    {track.isBamaSlammerOfficial && (
-                      <span className="px-2 py-0.5 rounded bg-amber-500 text-zinc-950 text-[10px] font-black uppercase">
-                        👑 Official Bama Drop
+                    {track.collabOpen && (
+                      <span className="px-2 py-0.5 rounded bg-purple-950/90 text-purple-300 text-[10px] font-black uppercase border border-purple-800">
+                        Collab Open
                       </span>
                     )}
-                    {/* Quick Block Icon */}
+
+                    {/* Block Artist Action */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onBlockArtist(track.artist, track.artistAvatar);
                       }}
-                      className="p-1.5 rounded-lg bg-black/60 hover:bg-red-900/60 text-zinc-400 hover:text-red-400 transition"
-                      title={`Block artist ${track.artist}`}
+                      className="p-1.5 rounded-lg bg-black/70 hover:bg-rose-950 text-zinc-400 hover:text-rose-400 transition"
+                      title={`Block artist ${track.artist} (cannot vote or see your tracks)`}
                     >
                       <Ban className="w-3.5 h-3.5" />
                     </button>
@@ -287,13 +333,21 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
                   )}
                 </button>
 
-                {/* Bottom Stats on Image */}
-                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-xs text-zinc-300">
-                  <div className="flex items-center gap-1 text-emerald-400 font-black">
-                    <DollarSign className="w-3.5 h-3.5" />
+                {/* Bottom Counts: Views & Plays Live Count */}
+                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-xs text-zinc-300 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-amber-300">
+                      <Headphones className="w-3.5 h-3.5" />
+                      {track.plays.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1 text-blue-300">
+                      <Eye className="w-3.5 h-3.5" />
+                      {track.views.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="text-emerald-400 font-bold font-mono">
                     ${track.cashEarned.toLocaleString()} earned
                   </div>
-                  <div className="font-mono text-zinc-400 text-[11px]">{track.bpm} BPM • {track.key}</div>
                 </div>
               </div>
 
@@ -325,7 +379,7 @@ export const ListenNowView: React.FC<ListenNowViewProps> = ({
                     <button
                       onClick={() => handleToggleLike(track.id)}
                       className={`flex items-center gap-1 text-xs transition cursor-pointer ${
-                        isLiked ? 'text-red-500 font-bold' : 'text-zinc-400 hover:text-white'
+                        isLiked ? 'text-rose-500 font-bold' : 'text-zinc-400 hover:text-white'
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />

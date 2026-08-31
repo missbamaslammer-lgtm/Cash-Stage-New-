@@ -1,5 +1,22 @@
 import React from 'react';
-import { DollarSign, ShieldAlert, Sparkles, Trophy, Disc, Mic2, Vote, Repeat, Users, Smartphone, Wallet, Flame, Target } from 'lucide-react';
+import { 
+  DollarSign, 
+  ShieldAlert, 
+  Sparkles, 
+  Trophy, 
+  Disc, 
+  Mic2, 
+  Vote, 
+  Repeat, 
+  Users, 
+  Wallet, 
+  Flame, 
+  Radio, 
+  ShoppingBag, 
+  Swords, 
+  Coins,
+  Calendar
+} from 'lucide-react';
 import { UserProfile, DailyMissionState } from '../types';
 
 interface NavbarProps {
@@ -8,8 +25,10 @@ interface NavbarProps {
   user: UserProfile;
   onOpenBlockedModal: () => void;
   onOpenProfileModal: () => void;
-  onOpenAABModal: () => void;
   onOpenMissionsModal: () => void;
+  onOpenStoreModal: () => void;
+  onOpenRadioModal: () => void;
+  onOpenRankingsModal: () => void;
   missionState: DailyMissionState;
 }
 
@@ -19,8 +38,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   user,
   onOpenBlockedModal,
   onOpenProfileModal,
-  onOpenAABModal,
   onOpenMissionsModal,
+  onOpenStoreModal,
+  onOpenRadioModal,
+  onOpenRankingsModal,
   missionState,
 }) => {
   const completedMissions = missionState.missions.filter((m) => m.isCompleted).length;
@@ -28,16 +49,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems = [
     { id: 'listen_now', label: 'Listen Now', icon: Disc, badge: 'LIVE' },
-    { id: 'recording_studio', label: 'Recording Studio', icon: Mic2, badge: 'DAW' },
-    { id: 'anonymous_voting', label: 'Anonymous Voting', icon: Vote, badge: '$500 POT' },
+    { id: 'call_to_battle', label: 'Battle Lobby', icon: Swords, badge: '48H MATCH' },
+    { id: 'anonymous_voting', label: 'Blind Voting', icon: Vote, badge: '$500 POT' },
+    { id: 'recording_studio', label: 'Studio DAW', icon: Mic2, badge: 'VOLOCO' },
     { id: 'listen_4_listen', label: 'Listen 4 Listen', icon: Repeat, badge: '+CREDITS' },
-    { id: 'crews', label: 'Crews & Squads', icon: Users, badge: 'WARS' },
+    { id: 'crews', label: 'Crews', icon: Users, badge: 'WARS' },
+    { id: 'contests', label: 'Contests', icon: Trophy, badge: '$2.5K' },
   ];
-
 
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-amber-500/20 text-white shadow-2xl">
-      {/* Top Banner with Alabama Slammer branding */}
+      {/* Top Banner */}
       <div className="bg-gradient-to-r from-amber-900/40 via-amber-600/30 to-amber-900/40 border-b border-amber-500/10 px-4 py-1.5 text-xs text-amber-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 relative">
@@ -47,46 +69,50 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="font-semibold tracking-wider text-amber-300">CASH STAGE</span>
           <span className="text-zinc-400">|</span>
           <span>Created by <strong className="text-amber-400 font-bold">Alabama Slammer</strong></span>
-          <span className="hidden md:inline text-zinc-400">• Official Android App & Battle Arena</span>
+          <span className="hidden md:inline text-zinc-400">• Official Battle Arena & Audio Studio</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Daily Missions Quick Launch Button */}
+        <div className="flex items-center gap-2.5">
+          {/* Daily Rankings Live Tracker */}
           <button
-            onClick={onOpenMissionsModal}
-            className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] font-bold transition cursor-pointer ${
-              unclaimedMissions > 0
-                ? 'bg-amber-500/20 text-amber-300 border-amber-400/50 hover:bg-amber-500/30 animate-pulse'
-                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700'
-            }`}
+            onClick={onOpenRankingsModal}
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-amber-300 text-[11px] font-bold transition cursor-pointer"
           >
-            <Flame className="w-3 h-3 text-orange-400" />
-            <span>Missions</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-zinc-950/80 text-[10px] text-amber-400 font-mono">
-              {completedMissions}/{missionState.missions.length}
-            </span>
+            <Trophy className="w-3 h-3 text-amber-400" />
+            <span className="hidden sm:inline">Daily Rankings (7pm/9pm/11pm)</span>
+            <span className="sm:hidden">Rankings</span>
           </button>
 
+          {/* Live Radio RSVP */}
           <button
-            onClick={onOpenAABModal}
-            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-[11px] font-medium transition cursor-pointer"
+            onClick={onOpenRadioModal}
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-950/60 hover:bg-blue-900/80 border border-blue-500/40 text-blue-300 text-[11px] font-bold transition cursor-pointer"
           >
-            <Smartphone className="w-3 h-3 text-emerald-400" />
-            <span className="hidden sm:inline">Android Studio AAB Hub</span>
-            <span className="sm:hidden">AAB Code</span>
+            <Radio className="w-3 h-3 text-blue-400" />
+            <span className="hidden sm:inline">Weekend DJ Radio ($10)</span>
+            <span className="sm:hidden">Radio</span>
           </button>
 
+          {/* Store Quick Launch */}
+          <button
+            onClick={onOpenStoreModal}
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-[11px] font-black transition cursor-pointer"
+          >
+            <ShoppingBag className="w-3 h-3 text-amber-400" />
+            <span>Store</span>
+          </button>
+
+          {/* Blocked Artists Manager */}
           <button
             onClick={onOpenBlockedModal}
             className="flex items-center gap-1 text-zinc-400 hover:text-red-400 text-[11px] transition cursor-pointer"
             title="Manage Blocked Artists"
           >
             <ShieldAlert className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Blocked Artists</span>
+            <span className="hidden sm:inline">Blocked</span>
           </button>
         </div>
       </div>
-
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-4">
@@ -114,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Primary Navigation Tabs */}
-        <nav className="hidden lg:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
+        <nav className="hidden xl:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -122,7 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition cursor-pointer relative ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition cursor-pointer relative ${
                   isActive
                     ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-zinc-950 shadow-md shadow-amber-500/20 font-bold'
                     : 'text-zinc-300 hover:text-white hover:bg-zinc-800/80'
@@ -166,36 +192,37 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {unclaimedMissions > 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />}
               </div>
               <div className="text-xs font-black text-amber-300 tracking-tight font-mono">
-                {completedMissions}/{missionState.missions.length} • {missionState.streakDays}d Streak
+                {completedMissions}/{missionState.missions.length}
               </div>
             </div>
           </button>
 
-          {/* Cash Balance Pill */}
+          {/* Cash Stage Bucks ($) Pill */}
           <div 
-            onClick={onOpenProfileModal}
+            onClick={onOpenStoreModal}
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-emerald-500/30 hover:border-emerald-500/60 transition cursor-pointer shadow-inner"
+            title="Cash Stage Bucks Wallet"
           >
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <Wallet className="w-3.5 h-3.5" />
+              <DollarSign className="w-3.5 h-3.5" />
             </div>
             <div className="text-right">
-              <div className="text-[10px] text-zinc-400 leading-tight uppercase font-semibold">Cash Pot</div>
-              <div className="text-xs font-black text-emerald-400 tracking-tight">
-                ${user.cashBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              <div className="text-[10px] text-zinc-400 leading-tight uppercase font-semibold">Bucks</div>
+              <div className="text-xs font-black text-emerald-400 tracking-tight font-mono">
+                ${user.cashBalance.toFixed(2)}
               </div>
             </div>
           </div>
 
-
-          {/* Listen Credits */}
+          {/* Cash Stage Coins (🪙) Pill */}
           <div 
-            onClick={() => setActiveTab('listen_4_listen')}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-900 border border-amber-500/20 hover:border-amber-500/40 transition cursor-pointer text-xs"
+            onClick={onOpenStoreModal}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-900 border border-amber-500/30 hover:border-amber-500/60 transition cursor-pointer text-xs"
+            title="Cash Stage Coins"
           >
-            <Repeat className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-bold text-amber-300">{user.listenCredits}</span>
-            <span className="text-[10px] text-zinc-400">L4L</span>
+            <Coins className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-mono font-black text-amber-300">{user.stageCoins.toLocaleString()}</span>
+            <span className="text-[10px] text-zinc-400">🪙</span>
           </div>
 
           {/* User Avatar Button */}
@@ -220,7 +247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Mobile Horizontal Navigation Tabs */}
-      <div className="lg:hidden flex items-center gap-1 px-3 py-1.5 overflow-x-auto no-scrollbar border-t border-zinc-800 bg-zinc-950">
+      <div className="xl:hidden flex items-center gap-1 px-3 py-1.5 overflow-x-auto no-scrollbar border-t border-zinc-800 bg-zinc-950">
         <button
           onClick={onOpenMissionsModal}
           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition cursor-pointer border ${
@@ -252,7 +279,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           );
         })}
       </div>
-
     </header>
   );
 };

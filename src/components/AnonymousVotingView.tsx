@@ -14,20 +14,25 @@ import {
   Award, 
   ShieldCheck, 
   Users,
-  Swords
+  Swords,
+  Lock,
+  Ban
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { BattleMatch, Track } from '../types';
+import { BattleMatch, Track, BlockedArtist } from '../types';
 import { audioEngine } from '../services/audioService';
+import { BattleBaseballCard } from './BattleBaseballCard';
 
 interface AnonymousVotingViewProps {
   battles: BattleMatch[];
   onCastVote: (battleId: string, choice: 'A' | 'B') => void;
+  blockedArtists: BlockedArtist[];
 }
 
 export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
   battles,
   onCastVote,
+  blockedArtists,
 }) => {
   const [activeBattleId, setActiveBattleId] = useState<string>(battles[0]?.id || '');
   const [playingSide, setPlayingSide] = useState<'A' | 'B' | null>(null);
@@ -35,8 +40,41 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
   const [listenProgressB, setListenProgressB] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
   const [userVotedChoice, setUserVotedChoice] = useState<'A' | 'B' | null>(null);
+  const [showStatsCardSide, setShowStatsCardSide] = useState<'A' | 'B' | null>(null);
 
-  const currentBattle = battles.find((b) => b.id === activeBattleId) || battles[0];
+  // Daily 7:00 PM EST post countdown
+  const [timeUntil7pmEST, setTimeUntil7pmEST] = useState('01h 14m 22s');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const estNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const target = new Date(estNow);
+      target.setHours(19, 0, 0, 0); // 7:00 PM EST
+      if (target.getTime() <= estNow.getTime()) {
+        target.setDate(target.getDate() + 1);
+      }
+      const diffMs = target.getTime() - estNow.getTime();
+      const hrs = Math.floor(diffMs / 3600000);
+      const mins = Math.floor((diffMs % 3600000) / 60000);
+      const secs = Math.floor((diffMs % 60000) / 1000);
+      setTimeUntil7pmEST(
+        `${String(hrs).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`
+      );
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Filter out any battle involving blocked artists
+  const blockedSet = new Set(blockedArtists.map((b) => b.artistName.toLowerCase()));
+  const availableBattles = battles.filter(
+    (b) =>
+      !blockedSet.has(b.trackA.track.artist.toLowerCase()) &&
+      !blockedSet.has(b.trackB.track.artist.toLowerCase())
+  );
+
+  const currentBattle = availableBattles.find((b) => b.id === activeBattleId) || availableBattles[0] || battles[0];
 
   // Listen timer effect
   useEffect(() => {
@@ -93,31 +131,33 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
 
   return (
     <div className="space-y-8 pb-32">
-      {/* Header Banner */}
+      
+      {/* Header Banner with 7 PM EST Daily Notice */}
       <div className="bg-gradient-to-r from-zinc-950 via-purple-950/40 to-zinc-950 border border-purple-500/30 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-md">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-black uppercase tracking-wider border border-purple-500/40">
               <EyeOff className="w-3.5 h-3.5" />
-              Anti-Clout Blind Arena
+              <span>Anti-Clout Blind Arena</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white">
               Anonymous Voting Finals
             </h2>
             <p className="text-xs sm:text-sm text-zinc-300 max-w-xl">
-              No follower bias. No name recognition. Artist identities remain completely anonymous until you listen to both tracks and submit your final verdict.
+              No follower bias. No name recognition. Audio drops are masked during live voting. Final battle scores post daily at <strong>7:00 PM EST</strong>.
             </p>
           </div>
 
-          {/* Cash Pot Badge */}
-          <div className="bg-zinc-900 border-2 border-amber-500/50 p-4 rounded-2xl text-center shadow-xl shadow-amber-500/10 flex-shrink-0">
-            <div className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">Grand Battle Pot</div>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400 flex items-center justify-center gap-1">
+          {/* Cash Pot Badge with 7 PM Countdown */}
+          <div className="bg-zinc-900 border-2 border-amber-500/50 p-4 rounded-2xl text-center shadow-xl shadow-amber-500/10 flex-shrink-0 space-y-1">
+            <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Grand Battle Pot</div>
+            <div className="text-2xl sm:text-3xl font-black text-emerald-400 flex items-center justify-center gap-1 font-mono">
               <DollarSign className="w-6 h-6 text-yellow-400" />
               ${currentBattle.potAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
-            <div className="text-[10px] text-amber-300 font-bold mt-1 flex items-center justify-center gap-1">
-              <Clock className="w-3 h-3" /> Live Voting Closes Soon
+            <div className="text-[10px] text-amber-300 font-bold flex items-center justify-center gap-1 font-mono">
+              <Clock className="w-3 h-3" />
+              <span>Posts at 7:00 PM EST ({timeUntil7pmEST})</span>
             </div>
           </div>
         </div>
@@ -125,7 +165,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
 
       {/* Battle Match Selector Tabs */}
       <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-        {battles.map((b) => (
+        {availableBattles.map((b) => (
           <button
             key={b.id}
             onClick={() => {
@@ -134,6 +174,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
               setUserVotedChoice(null);
               setListenProgressA(0);
               setListenProgressB(0);
+              setShowStatsCardSide(null);
               audioEngine.stopBeat();
               setPlayingSide(null);
             }}
@@ -166,7 +207,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between">
             <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-black uppercase">
-              Side A Contender
+              Side A Contender (Max 3m)
             </span>
             <div className="flex items-center gap-1 text-xs text-zinc-400 font-mono">
               <Clock className="w-3.5 h-3.5" />
@@ -207,7 +248,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
               </p>
             </div>
 
-            {/* Audio Audio Player Button */}
+            {/* Audio Player Button */}
             <button
               onClick={() => handlePlaySide('A')}
               className={`px-6 py-3 rounded-2xl font-black text-xs flex items-center justify-center gap-2 mx-auto shadow-lg transition cursor-pointer ${
@@ -264,7 +305,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between">
             <span className="px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-300 text-xs font-black uppercase">
-              Side B Contender
+              Side B Contender (Max 3m)
             </span>
             <div className="flex items-center gap-1 text-xs text-zinc-400 font-mono">
               <Clock className="w-3.5 h-3.5" />
@@ -358,7 +399,7 @@ export const AnonymousVotingView: React.FC<AnonymousVotingViewProps> = ({
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 flex items-center gap-3 text-xs text-zinc-400">
         <ShieldCheck className="w-5 h-5 text-emerald-400 flex-shrink-0" />
         <span>
-          <strong>Anti-Tamper Vote Protocol:</strong> Every vote is cryptographically tied to verified audio listening time. Cash prize pots are automatically disbursed to the winning artist upon tournament deadline.
+          <strong>Anti-Tamper Vote Protocol:</strong> Every vote is cryptographically tied to verified audio listening time. Blocked artists are strictly barred from viewing or voting on your tracks. Daily final tallies post at 7:00 PM EST.
         </span>
       </div>
     </div>
