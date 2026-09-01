@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cash Stage - Stem Previewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#b9ccaf",
+                      "on-secondary-fixed-variant": "#544600",
+                      "inverse-on-surface": "#313030",
+                      "on-primary": "#013a00",
+                      "on-tertiary-fixed-variant": "#930005",
+                      "on-secondary": "#3a3000",
+                      "surface-container-low": "#1c1b1b",
+                      "on-tertiary-container": "#c4010b",
+                      "on-primary-fixed": "#002200",
+                      "tertiary-fixed": "#ffdad5",
+                      "tertiary": "#fff7f6",
+                      "primary-container": "#00ff00",
+                      "secondary": "#fff9ef",
+                      "on-tertiary-fixed": "#410001",
+                      "surface-tint": "#02e600",
+                      "outline": "#84967c",
+                      "tertiary-fixed-dim": "#ffb4aa",
+                      "inverse-surface": "#e5e2e1",
+                      "on-surface": "#e5e2e1",
+                      "secondary-fixed-dim": "#e9c400",
+                      "outline-variant": "#3b4b35",
+                      "surface-container-highest": "#353534",
+                      "on-background": "#e5e2e1",
+                      "primary": "#eaffde",
+                      "surface-variant": "#353534",
+                      "surface-dim": "#131313",
+                      "surface-bright": "#3a3939",
+                      "on-error": "#690005",
+                      "on-primary-fixed-variant": "#015300",
+                      "on-secondary-fixed": "#221b00",
+                      "error": "#ffb4ab",
+                      "on-tertiary": "#690003",
+                      "surface": "#131313",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-primary-container": "#027100",
+                      "primary-fixed": "#77ff61",
+                      "surface-container-high": "#2a2a2a",
+                      "background": "#131313",
+                      "secondary-fixed": "#ffe16d",
+                      "inverse-primary": "#026e00",
+                      "tertiary-container": "#ffd2cc",
+                      "surface-container": "#201f1f",
+                      "on-secondary-container": "#725f00",
+                      "error-container": "#93000a",
+                      "secondary-container": "#ffdb3c",
+                      "primary-fixed-dim": "#02e600",
+                      "on-error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "48px",
+                      "margin-desktop": "32px",
+                      "gutter": "16px",
+                      "margin-mobile": "16px",
+                      "stack-sm": "8px",
+                      "base": "4px",
+                      "stack-md": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "headline-lg-mobile": [
+                              "Archivo Narrow"
+                      ],
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        .text-neon {
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        .mixer-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 12px;
+            background: #eaffde;
+            cursor: pointer;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        .mixer-slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #3b4b35;
+            border-radius: 2px;
+        }
+        
+        /* Vertical Slider styling */
+        .slider-vertical-wrapper {
+            display: inline-block;
+            width: 40px;
+            height: 150px;
+            padding: 0;
+            position: relative;
+        }
+        .slider-vertical {
+            width: 150px;
+            height: 40px;
+            margin: 0;
+            transform-origin: 75px 75px;
+            transform: rotate(-90deg);
+            position: absolute;
+            top: 0;
+            left: -55px; /* Adjust based on width */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md text-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container pb-32">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant docked full-width top-0 sticky">
+<button class="text-on-surface hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high active:opacity-70">
+<span class="material-symbols-outlined text-2xl" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tighter text-on-surface">CASH STAGE</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-outline-variant hover:border-primary transition-colors cursor-pointer active:opacity-70">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A gritty, high-contrast portrait of a hip-hop artist in a dark studio illuminated by stark, moody lighting. The subject exudes confidence and ambition, captured in a tight headshot. The color palette emphasizes deep blacks, stark whites, and subtle cool undertones, fitting a professional yet raw aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsuXFjr0l89ue-ZylZIZZeZVP3bL_hdup3zS1h-m49JiciF-Ogmy6AK8hLvCxXeFZhbsHDDFhWdJojzy1Fq80ulXT2YGoW_Lu1hc9BmuUP56HCu17WdO11bAHOk6UOLiICJY-9aWu9YjPi9C4NtXcaqBf1UA8H1jCufnn9QVn-2yJy2x_dHRY-P0tq_k3EfhDhkQlypQ50k56LDce6K5ZUds4WuuopuodF03nozcOmwHEaXBP8Zk5Xew"/>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-md flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<section class="flex flex-col gap-stack-sm md:flex-row md:justify-between md:items-end border-b border-outline-variant pb-stack-md">
+<div>
+<span class="inline-block px-3 py-1 bg-surface-container-high text-primary font-label-sm text-label-sm uppercase tracking-wider rounded-full mb-2 neon-glow">Exclusive Pack</span>
+<h1 class="font-display-lg text-display-lg text-primary text-neon">MIDNIGHT CIPHER</h1>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Prod. by EliteBeats • 140 BPM • F# Minor</p>
+</div>
+<div class="flex gap-4 mt-4 md:mt-0">
+<button class="flex items-center gap-2 px-6 py-3 bg-transparent border border-outline text-on-surface rounded-lg hover:border-primary hover:text-primary hover:neon-glow transition-all font-label-sm text-label-sm uppercase">
+<span class="material-symbols-outlined" data-icon="favorite_border">favorite_border</span>
+                    Save
+                </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-high border border-outline-variant text-on-surface rounded-lg hover:bg-surface-container-highest transition-all font-label-sm text-label-sm uppercase">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+                    Share
+                </button>
+</div>
+</section>
+<!-- Visualization Area -->
+<section class="relative w-full h-[353px] min-h-[300px] bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex items-center justify-center">
+<!-- 3D Waveform Animation Placeholder -->
+<!-- STITCH_THREEJS_START:ANIMATION_35 class="absolute inset-0 w-full h-full z-0 opacity-80" -->
+<div class="absolute inset-0 w-full h-full z-0 opacity-80" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_35" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_35');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  // Three.js Stem Previewer Animation
+// Visualizes audio stems with interactive geometric waveforms
+
+const scene = new THREE.Scene();
+const containerWidth = container.clientWidth || window.innerWidth;
+const containerHeight = container.clientHeight || window.innerHeight;
+const camera = new THREE.PerspectiveCamera(75, containerWidth / containerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(containerWidth, containerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const pointLight = new THREE.PointLight(0x39ff14, 1, 100);
+pointLight.position.set(5, 5, 5);
+scene.add(pointLight);
+
+// Waveform Geometry (Interactive Bars)
+const bars = [];
+const barCount = 32;
+const group = new THREE.Group();
+
+for (let i = 0; i < barCount; i++) {
+    const geometry = new THREE.BoxGeometry(0.2, 1, 0.2);
+    const material = new THREE.MeshPhongMaterial({ 
+        color: 0x39ff14,
+        transparent: true,
+        opacity: 0.8
+    });
+    const bar = new THREE.Mesh(geometry, material);
+    bar.position.x = (i - barCount / 2) * 0.4;
+    group.add(bar);
+    bars.push(bar);
+}
+scene.add(group);
+
+camera.position.z = 10;
+
+// Render Loop
+function animate(t) {
+    requestAnimationFrame(animate);
+    
+    const time = t * 0.001;
+    
+    bars.forEach((bar, i) => {
+        const freq = Math.sin(time * 2 + i * 0.5) * 2 + 2.5;
+        bar.scale.y = freq;
+        bar.material.opacity = 0.4 + (freq / 5) * 0.6;
+    });
+    
+    group.rotation.y = Math.sin(time * 0.2) * 0.2;
+    
+    renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+});
+
+animate(0);
+
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_35 -->
+<!-- Overlay Info -->
+<div class="absolute bottom-4 left-4 z-10 bg-background/60 backdrop-blur-sm px-4 py-2 rounded-md border border-outline-variant">
+<div class="font-label-sm text-label-sm text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    STEREO OUT
+                </div>
+</div>
+</section>
+<!-- Multi-track Mixer -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-gutter bg-surface-container-low p-stack-md rounded-xl border border-outline-variant">
+<!-- Drum Track -->
+<div class="flex flex-col items-center gap-stack-sm bg-surface rounded-lg p-4 border border-outline-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">Drums</div>
+<div class="flex gap-2 mb-4 w-full justify-center">
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">S</button>
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-error hover:text-on-error transition-colors">M</button>
+</div>
+<div class="slider-vertical-wrapper my-4">
+<input class="mixer-slider slider-vertical" max="100" min="0" type="range" value="80"/>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-2">0.0 dB</div>
+</div>
+<!-- Bass Track -->
+<div class="flex flex-col items-center gap-stack-sm bg-surface rounded-lg p-4 border border-outline-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">Bass</div>
+<div class="flex gap-2 mb-4 w-full justify-center">
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">S</button>
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-error hover:text-on-error transition-colors">M</button>
+</div>
+<div class="slider-vertical-wrapper my-4">
+<input class="mixer-slider slider-vertical" max="100" min="0" type="range" value="95"/>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-2">+1.2 dB</div>
+</div>
+<!-- Synth Track -->
+<div class="flex flex-col items-center gap-stack-sm bg-surface rounded-lg p-4 border border-outline-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">Synth</div>
+<div class="flex gap-2 mb-4 w-full justify-center">
+<button class="w-8 h-8 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm shadow-[0_0_10px_rgba(255,225,109,0.3)] transition-colors">S</button>
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-error hover:text-on-error transition-colors">M</button>
+</div>
+<div class="slider-vertical-wrapper my-4">
+<input class="mixer-slider slider-vertical" max="100" min="0" type="range" value="70"/>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-2">-2.5 dB</div>
+</div>
+<!-- Vocals Track (Muted Example) -->
+<div class="flex flex-col items-center gap-stack-sm bg-surface rounded-lg p-4 border border-outline-variant hover:border-primary-fixed-dim transition-colors group opacity-75">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">Vocals</div>
+<div class="flex gap-2 mb-4 w-full justify-center">
+<button class="w-8 h-8 rounded bg-surface-container-highest text-on-surface font-label-sm text-label-sm hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">S</button>
+<button class="w-8 h-8 rounded bg-error text-on-error font-label-sm text-label-sm shadow-[0_0_10px_rgba(255,180,171,0.3)] transition-colors">M</button>
+</div>
+<div class="slider-vertical-wrapper my-4">
+<input class="mixer-slider slider-vertical" max="100" min="0" type="range" value="0"/>
+</div>
+<div class="font-label-sm text-label-sm text-error mt-2">-INF dB</div>
+</div>
+</section>
+<!-- Transport Controls -->
+<section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant flex flex-col gap-4">
+<!-- Waveform progress (static representation) -->
+<div class="w-full h-12 bg-surface flex items-center rounded overflow-hidden relative border border-outline-variant">
+<div class="absolute left-0 top-0 h-full w-[45%] bg-primary/20 border-r border-primary z-10"></div>
+<!-- Blocky digital waveform representation -->
+<div class="flex items-end h-full w-full gap-[2px] px-2 opacity-50 z-0">
+<div class="w-1 h-[20%] bg-on-surface-variant"></div><div class="w-1 h-[40%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div><div class="w-1 h-[60%] bg-on-surface-variant"></div><div class="w-1 h-[80%] bg-on-surface-variant"></div><div class="w-1 h-[50%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div><div class="w-1 h-[40%] bg-on-surface-variant"></div><div class="w-1 h-[90%] bg-on-surface-variant"></div><div class="w-1 h-[70%] bg-on-surface-variant"></div>
+<div class="w-1 h-[20%] bg-on-surface-variant"></div><div class="w-1 h-[40%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div><div class="w-1 h-[60%] bg-on-surface-variant"></div><div class="w-1 h-[80%] bg-on-surface-variant"></div><div class="w-1 h-[50%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div><div class="w-1 h-[40%] bg-on-surface-variant"></div><div class="w-1 h-[90%] bg-on-surface-variant"></div><div class="w-1 h-[70%] bg-on-surface-variant"></div>
+<div class="w-1 h-[20%] bg-on-surface-variant"></div><div class="w-1 h-[40%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div><div class="w-1 h-[60%] bg-on-surface-variant"></div><div class="w-1 h-[80%] bg-on-surface-variant"></div><div class="w-1 h-[50%] bg-on-surface-variant"></div><div class="w-1 h-[30%] bg-on-surface-variant"></div>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex justify-between items-center">
+<div class="font-label-sm text-label-sm text-on-surface-variant w-16">01:24</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-3xl" data-icon="skip_previous">skip_previous</span>
+</button>
+<button class="bg-primary text-on-primary hover:bg-primary-fixed transition-all flex items-center justify-center w-16 h-16 rounded-full neon-glow hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-4xl" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-3xl" data-icon="skip_next">skip_next</span>
+</button>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant w-16 text-right">03:12</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button Contextual (Claim Stems) -->
+<div class="fixed bottom-24 right-4 md:right-8 z-40 hidden md:block">
+<button class="bg-primary text-on-primary px-6 py-4 rounded-full font-headline-lg-mobile text-headline-lg-mobile uppercase flex items-center gap-2 neon-glow hover:bg-primary-fixed hover:scale-105 transition-all shadow-2xl border border-primary">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+            Claim All Stems
+        </button>
+</div>
+<!-- Mobile FAB alternative (Full width bottom button) -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-background/90 backdrop-blur-md border-t border-outline-variant z-40 md:hidden pb-safe">
+<button class="w-full bg-primary text-on-primary py-4 rounded-lg font-headline-lg-mobile text-headline-lg-mobile uppercase flex justify-center items-center gap-2 neon-glow hover:bg-primary-fixed active:scale-95 transition-all shadow-2xl">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+            Claim Stems
+        </button>
+</div>
+</body></html>
