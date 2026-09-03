@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cash Stage - Block Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#131313",
+                      "surface-dim": "#131313",
+                      "on-tertiary-fixed-variant": "#930005",
+                      "surface-container-low": "#1c1b1b",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#027100",
+                      "on-surface": "#e5e2e1",
+                      "secondary-fixed": "#ffe16d",
+                      "surface-variant": "#353534",
+                      "inverse-on-surface": "#313030",
+                      "secondary-container": "#ffdb3c",
+                      "surface-container-highest": "#353534",
+                      "on-secondary-container": "#725f00",
+                      "on-primary-fixed": "#002200",
+                      "inverse-surface": "#e5e2e1",
+                      "secondary": "#fff9ef",
+                      "on-secondary-fixed": "#221b00",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#544600",
+                      "on-surface-variant": "#b9ccaf",
+                      "surface-bright": "#3a3939",
+                      "on-primary": "#013a00",
+                      "inverse-primary": "#026e00",
+                      "on-secondary": "#3a3000",
+                      "tertiary-fixed-dim": "#ffb4aa",
+                      "primary": "#eaffde",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#ffdad5",
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#e9c400",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-fixed": "#410001",
+                      "surface-tint": "#02e600",
+                      "outline-variant": "#3b4b35",
+                      "tertiary-container": "#ffd2cc",
+                      "primary-fixed-dim": "#02e600",
+                      "on-tertiary-container": "#c4010b",
+                      "outline": "#84967c",
+                      "primary-fixed": "#77ff61",
+                      "tertiary": "#fff7f6",
+                      "on-tertiary": "#690003",
+                      "on-primary-fixed-variant": "#015300",
+                      "primary-container": "#00ff00",
+                      "surface": "#131313",
+                      "on-background": "#e5e2e1",
+                      "surface-container": "#201f1f",
+                      "surface-container-lowest": "#0e0e0e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px",
+                      "base": "4px",
+                      "gutter": "16px",
+                      "stack-lg": "48px",
+                      "stack-md": "24px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg-mobile": [
+                              "Archivo Narrow"
+                      ],
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Archivo Narrow"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md text-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full z-50 bg-background/80 backdrop-blur-md bg-background dark:bg-surface-dim font-headline-lg-mobile text-headline-lg-mobile fixed top-0 left-0">
+<button class="text-on-surface hover:text-primary transition-colors opacity-70 transition-all flex items-center justify-center p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tighter text-on-surface">CASH STAGE</h1>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border-2 border-surface-container-highest cursor-pointer hover:border-primary transition-colors flex-shrink-0">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A gritty, high-contrast avatar portrait of an underground rap artist in a dark recording booth. Neon green light spills across their face from a nearby console. The aesthetic is raw and professional, matching a competitive digital battle platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzLxMSQ-9wybVL3ui-P_k0F8FceKPf5ZvzCI3uJNmRZmMYRMst-sbJs0LCIn8--I8EabG39UmyM2fL_Lh6st8-LS2Fj6w9rX6JFohgxD-83KvGg5mlfmJe-uqjjtFBPw5ekeUcnx8LyIMn_udhEcsnFdOhw3cmRf3vsc-JdR6hh_pkHbzKpVHj59pLocN9O-v9Lhxhqbj3uhxgVMg9Wjm7V9HM_NCyw2RFjLOijj4IeURdRsHtDE_Opw"/>
+</div>
+</header>
+<main class="flex-grow pt-[80px] pb-[100px] px-margin-mobile max-w-[1280px] mx-auto w-full md:px-margin-desktop grid grid-cols-4 md:grid-cols-12 gap-gutter">
+<div class="col-span-4 md:col-span-8 md:col-start-3 flex flex-col gap-stack-lg">
+<section class="flex flex-col gap-stack-sm">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary">Block Management</h2>
+<div class="bg-surface-container-low p-6 rounded-lg border border-surface-variant shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">Blocked users cannot see your content, participate in battles with you, or vote on your tracks. Muted artists' content is hidden from your feed, but they can still interact with your battles. This ensures your arena experience remains within your control.</p>
+</div>
+</section>
+<section class="flex flex-col gap-stack-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant z-10" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full bg-[#050505] text-on-surface pl-12 pr-4 py-4 rounded-DEFAULT border-b border-outline-variant focus:border-primary focus:ring-0 focus:outline-none transition-all placeholder:text-surface-variant font-label-sm text-label-sm" placeholder="Search for artists to block..." type="text"/>
+<div class="absolute bottom-0 left-0 w-full h-[1px] bg-primary scale-x-0 origin-left transition-transform duration-300 peer-focus:scale-x-100"></div>
+</div>
+</section>
+<section class="flex flex-col gap-stack-sm">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Currently Blocked</h3>
+<ul class="flex flex-col gap-base">
+<li class="bg-[#141414] rounded-lg p-4 flex items-center justify-between border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img alt="MC Shadow avatar" class="w-full h-full object-cover" data-alt="A dark, moody avatar image of a rival hip-hop artist named MC Shadow. The figure is obscured by shadow in a dimly lit alleyway, lit only by a faint, cold blue street lamp. The style is gritty, urban, and high-contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtCAr50fket2nk09xzNnTwA-pBKjX9HabVQtuWayMt3Daw2GJqi1oVOA1gbv09Tz0vt-CuvqKRdCi7bkpEqq0ZdxP5LziA5T_aTbUgEMaqexlzooHITRA6yrh9_9erocnfUQWzgAaz2yBZiiZvZ49w4w9rX0OmdJ09rnlisII7vIJkKg-iSz6UxWJn3GHh1K_8NSnLBKPfOsleIhIsTi9Q9O8q4xUKH2b08zLkWKcQD5Jlo_xPgdkVFw"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-[18px]">MC Shadow</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Blocked on Oct 12</span>
+</div>
+</div>
+<button class="px-6 py-2 rounded-full border border-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-variant hover:text-primary transition-all active:scale-95">
+                            Unblock
+                        </button>
+</li>
+<li class="bg-[#141414] rounded-lg p-4 flex items-center justify-between border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img alt="Lyric Flow avatar" class="w-full h-full object-cover" data-alt="A stark, intense avatar portrait of a battle rapper known as Lyric Flow. The artist is staring intensely into the camera in a smoky, dark environment. A harsh, neon red backlight provides edge lighting, emphasizing a raw, aggressive, and professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE38KVOzE7Lp9YRst_iEM448lDmKCCHmuNm3hq2IIzzEZ0w3CwmLrVXDNzbv3MsPyp8UlkVuQKmZXuEU-7lYn3k4YGLah-Hs0eu6JQyBf-BRQL7-HRpMwJuVNIxx96wN2QY277LaUY_fxgAr562fFwbuRRPOA1z9wWcItiOV70GHuGowOWNASdz80FUAKloWoTkDwD05Wbi7QuYRT7HWtjmRgUJ0UUqxTHV4trtYMLjwZ7ijf0hYpQJg"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-[18px]">Lyric Flow</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Blocked on Sep 05</span>
+</div>
+</div>
+<button class="px-6 py-2 rounded-full border border-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-variant hover:text-primary transition-all active:scale-95">
+                            Unblock
+                        </button>
+</li>
+<li class="bg-[#141414] rounded-lg p-4 flex items-center justify-between border border-surface-variant hover:border-primary-fixed-dim transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-variant text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-[18px]">DJ Phantom</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Blocked on Aug 21</span>
+</div>
+</div>
+<button class="px-6 py-2 rounded-full border border-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-variant hover:text-primary transition-all active:scale-95">
+                            Unblock
+                        </button>
+</li>
+</ul>
+</section><section class="flex flex-col gap-stack-sm"><h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Muted Artists</h3><ul class="flex flex-col gap-base"><li class="bg-[#141414] rounded-lg p-4 flex items-center justify-between border border-surface-variant hover:border-primary-fixed-dim transition-colors group"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant flex items-center justify-center"><span class="material-symbols-outlined text-surface-variant text-2xl" style="font-variation-settings: 'FILL' 1;">person</span></div><div class="flex flex-col"><span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-[18px]">Rhythm King</span><span class="font-label-sm text-label-sm text-on-surface-variant">Muted on Nov 02</span></div></div><button class="px-6 py-2 rounded-full border border-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-variant hover:text-primary transition-all active:scale-95">Unmute</button></li><li class="bg-[#141414] rounded-lg p-4 flex items-center justify-between border border-surface-variant hover:border-primary-fixed-dim transition-colors group"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant flex items-center justify-center"><span class="material-symbols-outlined text-surface-variant text-2xl" style="font-variation-settings: 'FILL' 1;">person</span></div><div class="flex flex-col"><span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-[18px]">Flow Master</span><span class="font-label-sm text-label-sm text-on-surface-variant">Muted on Oct 28</span></div></div><button class="px-6 py-2 rounded-full border border-surface-variant text-on-surface font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-variant hover:text-primary transition-all active:scale-95">Unmute</button></li></ul></section>
+</div>
+</main>
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe bg-surface-container-lowest dark:bg-surface-container-lowest font-label-sm text-label-sm rounded-t-xl border-t border-outline-variant bg-surface-container-lowest/95 backdrop-blur-lg shadow-[0_-4px_20px_rgba(2,230,0,0.15)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all w-16 pb-2" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="truncate w-full text-center">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all w-16 pb-2" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">swords</span>
+<span class="truncate w-full text-center">Battles</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all w-16 pb-2" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">mic</span>
+<span class="truncate w-full text-center">Studio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all w-16 pb-2" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">groups</span>
+<span class="truncate w-full text-center">Collab</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all w-16 pb-2" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="truncate w-full text-center">Wallet</span>
+</a>
+</nav>
+<nav class="hidden md:flex flex-col h-full py-8 bg-surface-container-low dark:bg-surface-container-low font-body-md text-body-md w-80 docked left-0 shadow-2xl fixed top-16 border-r border-outline-variant z-40">
+<div class="px-6 mb-8 flex flex-col items-start">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-highest border-2 border-primary glow-effect">
+<img alt="Artist Avatar" class="w-full h-full object-cover" data-alt="A gritty, high-contrast avatar portrait of an underground rap artist in a dark recording booth. Neon green light spills across their face from a nearby console. The aesthetic is raw and professional, matching a competitive digital battle platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-EXNPAnWzl9WUiAiBWEW0NL2M5cJHl6eybriIYfHKDfmW9fOEXj1bocH-diW081akU_VxNTxz-da70SVpZO-SToACxDkLURdzYTjRIq5zRd3y_tndW7Ab4ytSH7TbfXTy00YWF-31oKUWqLdfC0vDpxJVv7gscZuR_qs84SbbzRKFhAP022ieANaVgSxtMTT5X7BMaBLZcY6mP9yQ-P9_KUWaS7MGLoeUWWxs0JVAU096hkxQ8Boq8Q"/>
+</div>
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary m-0 leading-tight">Artist Name</h2>
+<p class="font-label-sm text-label-sm text-secondary-fixed m-0">Rank: Elite</p>
+</div>
+</div>
+<div class="bg-[#141414] rounded-md px-4 py-2 border border-surface-variant w-full">
+<p class="font-label-sm text-label-sm text-on-surface-variant m-0 mb-1 uppercase">Balance</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface m-0">$2,450.00</p>
+</div>
+</div>
+<ul class="flex flex-col flex-grow pr-4">
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span>Home</span>
+</a>
+</li>
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">sports_esports</span>
+<span>Battle Arena</span>
+</a>
+</li>
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">graphic_eq</span>
+<span>Creator Studio</span>
+</a>
+</li>
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">handshake</span>
+<span>Collaboration Hub</span>
+</a>
+</li>
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">payments</span>
+<span>My Wallet</span>
+</a>
+</li>
+<li class="mb-2">
+<a class="flex items-center gap-4 px-6 py-3 bg-primary-container text-on-primary-container rounded-r-full font-bold translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<script>
+        // Simple search interaction script
+        const searchInput = document.querySelector('input[type="text"]');
+        const listItems = document.querySelectorAll('ul li');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            listItems.forEach(item => {
+                const name = item.querySelector('span.text-\\[18px\\]').textContent.toLowerCase();
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body></html>

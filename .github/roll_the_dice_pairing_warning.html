@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cash Stage - Roll the Dice</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary": "#fff7f6",
+                        "secondary-fixed": "#ffe16d",
+                        "secondary-fixed-dim": "#e9c400",
+                        "on-primary-container": "#027100",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary": "#fff9ef",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "inverse-primary": "#026e00",
+                        "on-secondary": "#3a3000",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#c4010b",
+                        "on-background": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "secondary-container": "#ffdb3c",
+                        "on-surface": "#e5e2e1",
+                        "on-secondary-fixed": "#221b00",
+                        "on-primary-fixed-variant": "#015300",
+                        "inverse-on-surface": "#313030",
+                        "primary": "#eaffde",
+                        "on-secondary-fixed-variant": "#544600",
+                        "background": "#131313",
+                        "surface-container-low": "#1c1b1b",
+                        "outline": "#84967c",
+                        "on-tertiary-fixed": "#410001",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface-dim": "#131313",
+                        "surface-bright": "#3a3939",
+                        "primary-fixed": "#77ff61",
+                        "primary-fixed-dim": "#02e600",
+                        "surface-container-highest": "#353534",
+                        "outline-variant": "#3b4b35",
+                        "surface-tint": "#02e600",
+                        "tertiary-container": "#ffd2cc",
+                        "on-surface-variant": "#b9ccaf",
+                        "on-tertiary": "#690003",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#201f1f",
+                        "surface": "#131313",
+                        "on-primary": "#013a00",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary-fixed": "#002200",
+                        "on-secondary-container": "#725f00",
+                        "primary-container": "#00ff00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "stack-lg": "48px",
+                        "stack-sm": "8px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Archivo Narrow"],
+                        "display-lg": ["Archivo Narrow"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 255, 0, 0.5);
+        }
+        .dice-container {
+            perspective: 1000px;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        .dice.rolling {
+            animation: roll 1s infinite linear;
+        }
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-color: #141414;
+            border: 2px solid #02e600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #02e600;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
+            font-family: 'Archivo Narrow', sans-serif;
+            font-weight: bold;
+        }
+        .front  { transform: rotateY(0deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        @keyframes roll {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(2, 230, 0, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(2, 230, 0, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(2, 230, 0, 0);
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant fixed top-0">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:text-primary transition-colors active:opacity-70">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold tracking-tighter text-on-surface">CASH STAGE</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline">
+<img alt="User Profile" class="object-cover w-full h-full" data-alt="A gritty, high-contrast digital avatar of a hip-hop artist in a neon-lit studio setting. Deep shadows and striking green highlights emphasize a professional, underground aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqP7EfikkJoUxsj1RcGiawEhk5T1AHzjEN2nM0ngXUMVWPZcCpK06ryPpSCaugGLPyL2aiVx8uvdHh4OciROp5s3O-JA6KX5RYJ-QYH5Ve_7ZV0t3TrJu-qUx93yur_4VaL3oPz9-zdVouye95UFPNUO2xVklSssDqKNVwPf8pl6xBO3eNyIcel6ATyNkLJwUXlOp8x_VYcnf8_1EicOZkIbeIFdr7BFwaOPHvWCcEjD4xVPxwSoeUSg"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop flex flex-col items-center justify-center relative">
+<!-- Live Counter -->
+<div class="absolute top-24 right-margin-mobile md:right-margin-desktop flex items-center gap-2 bg-surface-container-high py-2 px-4 rounded-full neon-border">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">LIVE PLAYERS: <span class="text-primary-fixed-dim font-bold">1,428</span></span>
+</div>
+<div class="w-full max-w-4xl flex flex-col items-center gap-stack-lg mt-12">
+<div class="text-center">
+<h2 class="font-display-lg text-display-lg text-on-surface tracking-tighter mb-2">ROLL TO MATCH</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Instantly pair with active creators for Battle or Collab.</p>
+</div>
+<!-- 3D Dice -->
+<div class="dice-container cursor-pointer pulse-ring rounded-full p-4" id="diceContainer">
+<div class="dice" id="dice">
+<div class="face front">?</div>
+<div class="face back">?</div>
+<div class="face right">?</div>
+<div class="face left">?</div>
+<div class="face top">?</div>
+<div class="face bottom">?</div>
+</div>
+</div>
+<div class="text-center h-8">
+<p class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-widest hidden animate-pulse" id="rollStatus">Searching for opponent...</p>
+</div><div class="max-w-md mx-auto mt-4 p-3 border border-error/30 bg-error/5 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-error text-body-md shrink-0 mt-0.5">warning</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+<span class="text-error font-bold uppercase tracking-wider">Warning:</span> 
+        Random pairing may match you with an artist you have blocked, or who has blocked you. Proceed with caution.
+    </p>
+</div>
+<!-- Options Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter w-full mt-8">
+<!-- Battle Mode -->
+<button class="bg-surface-container-high rounded-xl p-6 border border-outline-variant hover:border-primary-fixed-dim transition-all group text-left relative overflow-hidden flex flex-col justify-between h-48">
+<div class="absolute inset-0 bg-gradient-to-br from-error/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-error">swords</span>
+<span class="font-label-sm text-label-sm text-error uppercase tracking-wider font-bold">Battle Mode</span>
+</div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">Rank-Based</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 line-clamp-2">Match with opponents of similar skill level for a high-stakes showdown.</p>
+</div>
+<div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+<div class="h-full bg-error w-3/4"></div>
+</div>
+</button>
+<!-- Collab Mode -->
+<button class="bg-surface-container-high rounded-xl p-6 border border-outline-variant hover:border-primary-fixed-dim transition-all group text-left relative overflow-hidden flex flex-col justify-between h-48">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary-fixed-dim">handshake</span>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-wider font-bold">Collab Mode</span>
+</div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">Style-Based</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 line-clamp-2">Find artists with complementary styles to create something new.</p>
+</div>
+<div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed-dim w-1/2"></div>
+</div>
+</button>
+</div>
+<button class="mt-8 bg-primary-fixed-dim text-on-primary-fixed py-4 px-12 rounded-lg font-headline-lg-mobile text-headline-lg-mobile font-bold uppercase tracking-wide hover:bg-primary transition-colors neon-glow w-full md:w-auto" id="rollButton">
+                Roll Dice
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-safe bg-surface-container-lowest/95 backdrop-blur-lg border-t border-outline-variant shadow-[0_-4px_20px_rgba(2,230,0,0.15)] rounded-t-xl h-16">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">swords</span>
+<span class="font-label-sm text-label-sm mt-1">Battles</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">mic</span>
+<span class="font-label-sm text-label-sm mt-1">Studio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-sm text-label-sm mt-1">Collab</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-fixed transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm mt-1">Wallet</span>
+</a>
+</nav>
+<script>
+        const dice = document.getElementById('dice');
+        const rollBtn = document.getElementById('rollButton');
+        const statusText = document.getElementById('rollStatus');
+        let isRolling = false;
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            
+            dice.classList.add('rolling');
+            statusText.classList.remove('hidden');
+            rollBtn.disabled = true;
+            rollBtn.classList.add('opacity-50');
+            rollBtn.textContent = 'Rolling...';
+
+            // Simulate matchmaking delay
+            setTimeout(() => {
+                dice.classList.remove('rolling');
+                
+                // Randomly set a face
+                const rotations = [
+                    'rotateX(0deg) rotateY(0deg)', // front
+                    'rotateX(0deg) rotateY(180deg)', // back
+                    'rotateX(0deg) rotateY(-90deg)', // right
+                    'rotateX(0deg) rotateY(90deg)', // left
+                    'rotateX(-90deg) rotateY(0deg)', // top
+                    'rotateX(90deg) rotateY(0deg)' // bottom
+                ];
+                const finalRotation = rotations[Math.floor(Math.random() * rotations.length)];
+                dice.style.transform = finalRotation;
+
+                statusText.textContent = "MATCH FOUND!";
+                statusText.classList.remove('text-primary-fixed-dim');
+                statusText.classList.add('text-error', 'font-bold');
+
+                setTimeout(() => {
+                     // Reset for demo purposes
+                     isRolling = false;
+                     statusText.classList.add('hidden');
+                     statusText.textContent = "Searching for opponent...";
+                     statusText.classList.add('text-primary-fixed-dim');
+                     statusText.classList.remove('text-error', 'font-bold');
+                     rollBtn.disabled = false;
+                     rollBtn.classList.remove('opacity-50');
+                     rollBtn.textContent = 'Roll Dice';
+                     dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                }, 2000);
+
+            }, 1500);
+        }
+
+        rollBtn.addEventListener('click', rollDice);
+        document.getElementById('diceContainer').addEventListener('click', rollDice);
+    </script>
+</body></html>
